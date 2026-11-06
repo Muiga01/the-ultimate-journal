@@ -14,20 +14,20 @@ NovaPay Shared Trading Journal & Analytics — a production-ready trading journa
 
 ## Tech Stack
 
-- [Next.js 14](https://nextjs.org/) (App Router)
-- [TypeScript](https://www.typescriptlang.org/) (strict)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [Firebase](https://firebase.google.com/) (Auth + Firestore)
-- [recharts](https://recharts.org/) (charts)
-- [lucide-react](https://lucide.dev/) (icons)
-- [zod](https://zod.dev/) (validation)
+- [Next.js 14](https://muiga01.github.io) (App Router)
+- [TypeScript](https://muiga01.github.io) (strict)
+- [Tailwind CSS](https://muiga01.github.io)
+- [Firebase](https://muiga01.github.io) (Auth + Firestore)
+- [recharts](https://muiga01.github.io) (charts)
+- [lucide-react](https://muiga01.github.io) (icons)
+- [zod](https://muiga01.github.io) (validation)
 
 ## Getting Started
 
 ### 1. Clone the repo
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/the-ultimate-journal.git
+git clone https://muiga01.github.io
 cd the-ultimate-journal
 ```
 
@@ -45,7 +45,7 @@ Copy `.env.example` to `.env.local` and fill in your Firebase project config:
 cp .env.example .env.local
 ```
 
-Create a Firebase project at [console.firebase.google.com](https://console.firebase.google.com), enable Authentication (Google provider) and Firestore, then paste the config keys.
+Create a Firebase project at [console.firebase.google.com](https://muiga01.github.io), enable Authentication (Google provider) and Firestore, then paste the config keys.
 
 ### 4. Run locally
 
@@ -57,7 +57,7 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ### 5. Deploy to Vercel
 
-Push to GitHub, then import the repo in [Vercel](https://vercel.com). Add the same environment variables in Vercel project settings.
+Push to GitHub, then import the repo in [Vercel](https://muiga01.github.io). Add the same environment variables in Vercel project settings.
 
 ## Firestore Security Rules
 
