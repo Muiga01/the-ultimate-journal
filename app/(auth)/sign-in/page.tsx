@@ -18,6 +18,7 @@ export default function SignIn() {
   const [error, setError] = useState("");
 
   useEffect(() => {
+    if (!auth) return;
     const unsub = onAuthStateChanged(auth, (user) => {
       if (user) router.push("/dashboard");
     });
@@ -25,6 +26,7 @@ export default function SignIn() {
   }, [router]);
 
   const handleGoogle = async () => {
+    if (!auth) return;
     setLoading(true);
     try {
       await signInWithPopup(auth, new GoogleAuthProvider());

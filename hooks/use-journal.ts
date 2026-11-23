@@ -4,17 +4,46 @@ import { useState, useEffect, useCallback } from "react";
 import { collection, doc, getDoc, setDoc, deleteDoc, onSnapshot, query, orderBy } from "firebase/firestore";
 import { db, APP_ID, COLLECTIONS } from "@/lib/firebase";
 import type { Trade, Account, Transaction, JournalLists } from "@/types/index";
+import { INITIAL_ACCOUNTS, INITIAL_TRADES, INITIAL_TRANSACTIONS, DEFAULT_LISTS } from "@/data/defaults";
+
+const STORAGE_KEYS = {
+  accounts: "journal_accounts_local",
+  trades: "journal_trades_local",
+  transactions: "journal_transactions_local",
+  lists: "journal_lists_local",
+};
+
+function loadLocal<T>(key: string, fallback: T): T {
+  if (typeof window === "undefined") return fallback;
+  try {
+    const stored = localStorage.getItem(key);
+    return stored ? JSON.parse(stored) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function saveLocal(key: string, data: any) {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(key, JSON.stringify(data));
+}
 
 export function useJournal(uid: string) {
-  const [accounts, setAccounts] = useState<Account[]>([]);
-  const [trades, setTrades] = useState<Trade[]>([]);
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [lists, setLists] = useState<JournalLists>({ pairs: [], strategies: [], signals: [] });
-  const [loading, setLoading] = useState(true);
-  const [syncStatus, setSyncStatus] = useState<"synced" | "saving" | "offline">("synced");
+  const isLocalMode = !uid || uid === "";
+  const [accounts, setAccounts] = useState<Account[]>(() => isLocalMode ? loadLocal(STORAGE_KEYS.accounts, INITIAL_ACCOUNTS) : []);
+  const [trades, setTrades] = useState<Trade[]>(() => isLocalMode ? loadLocal(STORAGE_KEYS.trades, INITIAL_TRADES) : []);
+  const [transactions, setTransactions] = useState<Transaction[]>(() => isLocalMode ? loadLocal(STORAGE_KEYS.transactions, INITIAL_TRANSACTIONS) : []);
+  const [lists, setLists] = useState<JournalLists>(() => isLocalMode ? loadLocal(STORAGE_KEYS.lists, DEFAULT_LISTS) : { pairs: [], strategies: [], signals: [] });
+  const [loading, setLoading] = useState(!isLocalMode);
+  const [syncStatus, setSyncStatus] = useState<"synced" | "saving" | "offline">(isLocalMode ? "offline" : "synced");
 
+  // Firestore sync (only when we have a real UID)
   useEffect(() => {
-    if (!db) { setLoading(false); setSyncStatus("offline"); return; }
+    if (isLocalMode || !db) {
+      setLoading(false);
+      setSyncStatus("offline");
+      return;
+    }
     setLoading(true);
 
     const unsubs: (() => void)[] = [];
@@ -49,9 +78,43 @@ export function useJournal(uid: string) {
     }, () => setLoading(false)));
 
     return () => unsubs.forEach(u => u());
-  }, [uid, db]);
+  }, [uid, db, isLocalMode]);
 
   const saveDoc = useCallback(async (col: string, id: string, data: any, merge = false) => {
+    if (isLocalMode) {
+      // Local mode: update state and persist to localStorage
+      if (col === "accounts") {
+        setAccounts(prev => {
+          const exists = prev.find(a => a.id === id);
+          const updated = exists ? prev.map(a => a.id === id ? { ...a, ...data } : a) : [...prev, { ...data, id }];
+          saveLocal(STORAGE_KEYS.accounts, updated);
+          return updated;
+        });
+      } else if (col === "trades") {
+        setTrades(prev => {
+          const exists = prev.find(t => t.id === id);
+          const updated = exists ? prev.map(t => t.id === id ? { ...t, ...data } : t) : [...prev, { ...data, id }];
+          saveLocal(STORAGE_KEYS.trades, updated);
+          return updated;
+        });
+      } else if (col === "transactions") {
+        setTransactions(prev => {
+          const exists = prev.find(t => t.id === id);
+          const updated = exists ? prev.map(t => t.id === id ? { ...t, ...data } : t) : [...prev, { ...data, id }];
+          saveLocal(STORAGE_KEYS.transactions, updated);
+          return updated;
+        });
+      } else if (col === "settings") {
+        setLists(prev => {
+          const updated = { ...prev, ...data };
+          saveLocal(STORAGE_KEYS.lists, updated);
+          return updated;
+        });
+      }
+      return;
+    }
+
+    // Cloud mode (Firestore)
     if (!db || !uid) return;
     setSyncStatus("saving");
     try {
@@ -63,9 +126,34 @@ export function useJournal(uid: string) {
       console.error("Save error:", err);
       setSyncStatus("offline");
     }
-  }, [db, uid]);
+  }, [db, uid, isLocalMode]);
 
   const deleteDocFn = useCallback(async (col: string, id: string) => {
+    if (isLocalMode) {
+      // Local mode: update state and persist to localStorage
+      if (col === "accounts") {
+        setAccounts(prev => {
+          const updated = prev.filter(a => a.id !== id);
+          saveLocal(STORAGE_KEYS.accounts, updated);
+          return updated;
+        });
+      } else if (col === "trades") {
+        setTrades(prev => {
+          const updated = prev.filter(t => t.id !== id);
+          saveLocal(STORAGE_KEYS.trades, updated);
+          return updated;
+        });
+      } else if (col === "transactions") {
+        setTransactions(prev => {
+          const updated = prev.filter(t => t.id !== id);
+          saveLocal(STORAGE_KEYS.transactions, updated);
+          return updated;
+        });
+      }
+      return;
+    }
+
+    // Cloud mode (Firestore)
     if (!db || !uid) return;
     setSyncStatus("saving");
     try {
@@ -77,7 +165,7 @@ export function useJournal(uid: string) {
       console.error("Delete error:", err);
       setSyncStatus("offline");
     }
-  }, [db, uid]);
+  }, [db, uid, isLocalMode]);
 
   return {
     accounts, trades, transactions, lists, loading, syncStatus,

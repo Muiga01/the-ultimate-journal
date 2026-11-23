@@ -6,7 +6,7 @@ import { useTheme } from "@/components/theme-provider";
 import { useJournal } from "@/hooks/use-journal";
 import { auth } from "@/lib/firebase";
 import { onAuthStateChanged, User } from "firebase/auth";
-import { LayoutDashboard, NotebookText, Wallet, BarChart3, SlidersHorizontal } from "lucide-react";
+import { LayoutDashboard, BookOpen, Wallet, BarChart3, SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DashboardOverview } from "@/components/dashboard-overview";
 import { TradeLog } from "@/components/trade-log";
@@ -17,7 +17,7 @@ import { useDerivedTrades } from "@/data/defaults";
 
 const NAV = [
   { key: "overview", label: "Overview", icon: LayoutDashboard },
-  { key: "trades", label: "Trade Log", icon: NotebookText },
+  { key: "trades", label: "Trade Log", icon: BookOpen },
   { key: "ledger", label: "Ledger", icon: Wallet },
   { key: "analytics", label: "Analytics", icon: BarChart3 },
   { key: "settings", label: "Settings", icon: SlidersHorizontal },
@@ -35,6 +35,7 @@ export default function DashboardPage() {
   const { accounts, trades, transactions, lists, loading, syncStatus, saveAccount, deleteAccount, saveTrade, deleteTrade, saveTransaction, deleteTransaction, saveLists } = journal;
 
   useEffect(() => {
+    if (!auth) return;
     const unsub = onAuthStateChanged(auth, (u) => {
       setUser(u);
       if (u?.displayName) setName(u.displayName);
@@ -90,7 +91,7 @@ export default function DashboardPage() {
             )}
           </button>
           <button
-            onClick={() => { auth.signOut(); sessionStorage.clear(); router.push("/sign-in"); }}
+            onClick={() => { auth?.signOut(); sessionStorage.clear(); router.push("/sign-in"); }}
             className="w-9 h-9 rounded-full flex items-center justify-center hover:bg-destructive/10 text-destructive transition"
           >
             <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7" /></svg>
@@ -111,11 +112,11 @@ export default function DashboardPage() {
           </div>
           <div className="flex items-center gap-3">
             <span className={`px-2.5 py-1 rounded-md text-xs font-medium border ${syncStatus === "synced" ? "bg-green/10 text-green border-green/20" : syncStatus === "saving" ? "bg-purple/10 text-purple border-purple/20" : "bg-amber/10 text-amber border-amber/20"}`}>
-              {syncStatus === "synced" ? "Cloud Synced" : syncStatus === "saving" ? "Saving…" : "Offline"}
+              {syncStatus === "synced" ? "Cloud Synced" : syncStatus === "saving" ? "Saving…" : user ? "Offline" : "Local Mode"}
             </span>
             <div className="flex gap-2">
               <SelectScope accounts={accounts} activeScope={activeScope} onChange={setActiveScope} />
-              <Button size="sm" onClick={() => auth.signOut()}>Logout</Button>
+              <Button size="sm" onClick={() => { auth?.signOut(); router.push("/sign-in"); }}>Logout</Button>
             </div>
           </div>
         </header>

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ledger — The Ultimate Journal</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="dark">
+
+  <div id="page-overlay" class="hidden fixed inset-0 z-40 bg-black/50 backdrop-blur" onclick="document.getElementById('sidebar').classList.remove('translate-x-0')"></div>
+
+  <div class="flex h-screen w-full overflow-hidden bg-background text-foreground">
+
+    <aside id="sidebar" class="hidden md:flex w-20 flex-col items-center justify-center gap-5 border-r border-border bg-card/40 backdrop-blur p-3 rounded-2xl shadow-lg sticky top-4 self-start z-30">
+      <div class="text-xs font-mono font-bold tracking-widest text-primary">TJV1</div>
+      <nav class="flex flex-col gap-1">
+        <button data-nav="overview" class="w-10 h-10 rounded-lg flex items-center justify-center hover:bg-muted text-muted-foreground hover:text-foreground transition" title="Overview">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
+        </button>
+        <button data-nav="trades" class="w-10 h-10 rounded-lg flex items-center justify-center hover:bg-muted text-muted-foreground hover:text-foreground transition" title="Trade Log">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+        </button>
+        <button data-nav="ledger" class="w-10 h-10 rounded-lg flex items-center justify-center bg-primary text-primary-foreground shadow-lg" title="Ledger">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+        </button>
+        <button data-nav="analytics" class="w-10 h-10 rounded-lg flex items-center justify-center hover:bg-muted text-muted-foreground hover:text-foreground transition" title="Analytics">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+        </button>
+        <button data-nav="settings" class="w-10 h-10 rounded-lg flex items-center justify-center hover:bg-muted text-muted-foreground hover:text-foreground transition" title="Settings">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37Zm9.35-1.026c1.274.775 1.935 1.702 1.935 3.05v4c0 1.344-.661 2.274-1.935 3.055-.69.54-1.617.812-2.565.812h-4c-.949 0-1.876-.272-2.565-.812-1.274-.775-1.935-1.702-1.935-3.056v-4c0-1.344.661-2.274 1.935-3.055.69-.54 1.617-.812 2.565-.812h4c.948 0 1.875.271 2.564.812" /></svg>
+        </button>
+      </nav>
+      <div class="mt-auto flex flex-col items-center gap-2">
+        <button id="theme-toggle" class="w-9 h-9 rounded-full flex items-center justify-center hover:bg-muted transition" title="Toggle theme">
+          <svg id="theme-icon" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 008 0z" /></svg>
+        </button>
+        <button id="logout-btn" class="w-9 h-9 rounded-full flex items-center justify-center hover:bg-destructive/10 text-destructive transition" title="Logout" onclick="sessionStorage.clear(); window.location.href='index.html'">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7" /></svg>
+        </button>
+      </div>
+    </aside>
+
+    <div class="flex-1 flex flex-col min-w-0 relative">
+      <button class="md:hidden fixed top-4 left-4 z-50 p-2 bg-background border border-border rounded-lg" onclick="document.getElementById('sidebar').classList.toggle('translate-x-0'); document.getElementById('page-overlay').classList.toggle('hidden')">
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
+      </button>
+
+      <header class="h-16 border-b border-border bg-background/50 backdrop-blur flex items-center justify-between px-8 shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-sm">
+            <span id="header-avatar">T</span>
+          </div>
+          <div class="hidden md:block">
+            <div class="text-sm font-medium" id="header-name">Trader</div>
+            <div class="text-xs text-muted-foreground" id="header-email">Signed in</div>
+          </div>
+        </div>
+        <div class="flex items-center gap-3">
+          <span id="sync-badge" class="px-2.5 py-1 rounded-md text-xs font-medium border bg-green/10 text-green border-green/20">Cloud Synced</span>
+          <div class="flex gap-2">
+            <select id="account-filter" class="rounded-md border border-input bg-background px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-ring">
+              <option value="ALL">All Accounts</option>
+            </select>
+            <button class="btn btn-default btn-sm" onclick="sessionStorage.clear(); window.location.href='index.html'">Logout</button>
+          </div>
+        </div>
+      </header>
+
+      <div id="main-content" class="flex-1 overflow-y-auto p-8 main-content">
+        <div class="max-w-7xl mx-auto space-y-6">
+
+          <section data-page="ledger" class="space-y-6">
+            <div class="grid gap-3 md:grid-cols-4">
+              <div class="p-4 rounded-xl border border-card-border bg-card">
+                <div class="text-xs font-medium text-muted-foreground uppercase tracking-wider">Net Capital Seeded</div>
+                <div id="net-capital" class="text-2xl font-bold font-mono tabular-nums">$0.00</div>
+              </div>
+              <div class="p-4 rounded-xl border border-card-border bg-card">
+                <div class="text-xs font-medium text-muted-foreground uppercase tracking-wider">Total Deposits</div>
+                <div id="total-deposits" class="text-2xl font-bold font-mono tabular-nums text-green">$0.00</div>
+              </div>
+              <div class="p-4 rounded-xl border border-card-border bg-card">
+                <div class="text-xs font-medium text-muted-foreground uppercase tracking-wider">Total Withdrawals</div>
+                <div id="total-withdrawals" class="text-2xl font-bold font-mono tabular-nums text-red">-$0.00</div>
+              </div>
+              <div class="p-4 rounded-xl border border-card-border bg-card">
+                <div class="text-xs font-medium text-muted-foreground uppercase tracking-wider">Active Accounts</div>
+                <div id="active-accounts" class="text-2xl font-bold font-mono tabular-nums">0</div>
+              </div>
+            </div>
+
+            <div class="rounded-xl border border-card-border bg-card p-5">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="font-semibold">Trading Accounts</h3>
+                <button id="btn-add-account" class="btn btn-default btn-sm">
+                  <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+                  Add Account
+                </button>
+              </div>
+              <div id="accounts-grid" class="grid gap-3 md:grid-cols-3"></div>
+            </div>
+
+            <div class="rounded-xl border border-card-border bg-card p-5">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="font-semibold">Capital Transactions</h3>
+                <button id="btn-add-transaction" class="btn btn-default btn-sm">
+                  <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+                  Log Event
+                </button>
+              </div>
+              <div class="overflow-x-auto">
+                <table class="table w-full text-sm border-collapse">
+                  <thead>
+                    <tr class="border-b border-border text-left text-xs text-muted-foreground">
+                      <th class="pb-3">Date</th>
+                      <th class="pb-3">Account</th>
+                      <th class="pb-3">Description</th>
+                      <th class="pb-3 text-right">Amount ($)</th>
+                      <th class="pb-3 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="transactions-body"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div id="account-modal" class="modal-overlay hidden" aria-hidden="true">
+              <div class="modal-content">
+                <div class="flex flex-col space-y-1.5 text-center mb-4">
+                  <h3 class="modal-title text-lg font-semibold" id="account-modal-title">Add Account</h3>
+                </div>
+                <form id="account-form" class="space-y-3 p-4">
+                  <input type="hidden" id="acc-id" />
+                  <div>
+                    <label class="form-label">Account Name</label>
+                    <input id="acc-name" type="text" class="input" required />
+                  </div>
+                  <div>
+                    <label class="form-label">Broker / Firm</label>
+                    <input id="acc-broker" type="text" class="input" required />
+                  </div>
+                  <div>
+                    <label class="form-label">Initial Balance ($)</label>
+                    <input id="acc-balance" type="number" class="input" required />
+                  </div>
+                  <div>
+                    <label class="form-label">Color</label>
+                    <input id="acc-currency" type="text" class="input" placeholder="USD" />
+                    <input id="acc-color" type="color" class="mt-2 h-10 w-full rounded-md border-none bg-transparent p-0" />
+                  </div>
+                  <div class="flex justify-end gap-2 pt-3">
+                    <button type="button" class="btn btn-outline btn-sm" onclick="closeModal(document.getElementById('account-modal'))">Cancel</button>
+                    <button type="submit" class="btn btn-default btn-sm">Save Account</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            <div id="transaction-modal" class="modal-overlay hidden" aria-hidden="true">
+              <div class="modal-content">
+                <div class="flex flex-col space-y-1.5 text-center mb-4">
+                  <h3 class="modal-title text-lg font-semibold" id="transaction-modal-title">Log Transaction</h3>
+                </div>
+                <form id="transaction-form" class="space-y-3 p-4">
+                  <input type="hidden" id="tx-id" />
+                  <div>
+                    <label class="form-label">Account</label>
+                    <select id="tx-account" class="input" required></select>
+                  </div>
+                  <div>
+                    <label class="form-label">Date</label>
+                    <input id="tx-date" type="date" class="input" required />
+                  </div>
+                  <div>
+                    <label class="form-label">Description</label>
+                    <input id="tx-description" type="text" class="input" placeholder="Deposit, Withdrawal..." required />
+                  </div>
+                  <div>
+                    <label class="form-label">Amount ($)</label>
+                    <input id="tx-amount" type="number" step="any" class="input" placeholder="5000 or -1200" required />
+                  </div>
+                  <div class="flex justify-end gap-2 pt-3">
+                    <button type="button" class="btn btn-outline btn-sm" onclick="closeModal(document.getElementById('transaction-modal'))">Cancel</button>
+                    <button type="submit" class="btn btn-default btn-sm">Save Transaction</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </section>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

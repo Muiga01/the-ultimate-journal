@@ -5,7 +5,8 @@ import { ResponsiveContainer, BarChart, Bar, CartesianGrid, XAxis, YAxis, Toolti
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { fmtMoney } from "@/data/defaults";
 import { Card } from "@/components/ui/card";
-import { Select } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 
 const green = "#10B981";
 const red = "#EF4444";
@@ -159,7 +160,7 @@ export function PerformanceAnalytics({ derivedTrades, lists }: AnalyticsProps) {
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
                 <XAxis dataKey="day" tick={{ fontSize: 10 }} />
                 <YAxis tick={{ fontSize: 10 }} />
-                <Tooltip formatter={(v) => [fmtMoney(v), "P&L"]} />
+                <Tooltip formatter={(v) => [fmtMoney(Number(v)), "P&L"]} />
                 <Bar dataKey="pnl" radius={[6, 6, 0, 0]}>
                   {weekdayData.map((e, i) => (<Cell key={`w${i}`} fill={(e.pnl || 0) >= 0 ? green : red} />))}
                 </Bar>
@@ -186,7 +187,7 @@ export function PerformanceAnalytics({ derivedTrades, lists }: AnalyticsProps) {
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
                 <XAxis dataKey="date" tick={{ fontSize: 10 }} />
                 <YAxis tickFormatter={(v) => `$${v}`} tick={{ fontSize: 10 }} />
-                <Tooltip formatter={(v) => [fmtMoney(v), "Cumulative"]} />
+                <Tooltip formatter={(v) => [fmtMoney(Number(v)), "Cumulative"]} />
                 <Area type="monotone" dataKey="pnl" stroke={green} strokeWidth={2.5} fillOpacity={1} fill="url(#cumGrad)" />
               </AreaChart>
             </ResponsiveContainer>
